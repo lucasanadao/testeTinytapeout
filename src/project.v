@@ -16,52 +16,9 @@ module tt_um_teste_tinytapeout (
     input  wire       rst_n     // reset_n - low to reset
 );
 
-reg [7:0] ui_in_reg, uio_in_reg;
-reg [7:0] uo_out_reg, uio_out_reg;
-reg [7:0] uo_out_reg_next, uio_out_reg_next;
-
-reg [7:0] uio_oe_reg;
-
-always @(posedge clk or negedge rst_n) begin
-    if (~rst_n) begin
-        ui_in_reg <= 8'b0;
-        uio_in_reg <= 8'b0;
-    end
-    else begin
-        ui_in_reg <= ui_in;
-        uio_in_reg <= uio_in;
-    end
-end
-
-always @(posedge clk or negedge rst_n) begin
-    if (~rst_n) begin
-        uo_out_reg <= 8'b0;
-        uio_out_reg <= 8'b0;
-    end
-    else begin
-        uo_out_reg <= uo_out_reg_next;
-        uio_out_reg <= uio_out_reg_next;
-    end
-end
-
-always @* begin
-    // By default, outputs are 0
-    uo_out_reg_next = 8'b0;
-    uio_out_reg_next = 8'b0;
-    uio_oe_reg = 8'b0;
-
-    // If enabled, sum inputs and set all outputs to 0
-    if (ena) begin
-        // Example: sum the first 4 bits of ui_in
-        uo_out_reg_next = ui_in_reg[3:0] + ui_in_reg[7:4];
-        uio_out_reg_next = 8'b0; // All outputs are 0
-        uio_oe_reg = 8'b11111111; // All bits high to enable output path
-    end
-end
-
-// Assign outputs
-assign uo_out = uo_out_reg;
-assign uio_out = uio_out_reg;
-assign uio_oe = uio_oe_reg;
+assign uo_out = ui_in[3:0] + ui_in[7:4]; // Sum of the first 4 bits and the last 4 bits of ui_in
+assign uio_out = 8'b0; // All outputs set to 0
+assign uio_oe = ena ? 8'b11111111 : 8'b0; // Enable output path if ena is high
 
 endmodule
+
